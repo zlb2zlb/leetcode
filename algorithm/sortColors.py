@@ -7,7 +7,7 @@
 # @Software: PyCharm
 from typing import List
 
-
+## 时间复杂度O(n),空间复杂度O(1)
 class Solution:
     def sortColors(self, nums: List[int]) -> None:
         """
