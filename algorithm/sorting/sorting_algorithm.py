@@ -33,6 +33,7 @@ def bubbleSort(nums:List[int]) -> List[int]:
                 nums[j] = temp
     return nums
 
+# 快速排序
 '''
 快速排序的基本思想：通过一趟排序将待排记录分隔成独立的两部分，其中一部分记录的关键字均比另一部分的关键字小，则可分别对这两部分记录继续进行排序，以达到整个序列有序。
 快速排序使用分治法来把一个串（list）分为两个子串（sub-lists）。具体算法描述如下：
@@ -41,7 +42,6 @@ def bubbleSort(nums:List[int]) -> List[int]:
     重新排序数列，所有元素比基准值小的摆放在基准前面，所有元素比基准值大的摆在基准的后面（相同的数可以到任一边）。在这个分区退出之后，该基准就处于数列的中间位置。这个称为分区（partition）操作；
     递归地（recursive）把小于基准值元素的子数列和大于基准值元素的子数列排序。
 '''
-# 快速排序
 def quickSort(nums:List[int]) -> List[int]:
     '''
     时间复杂度：O(nlogn)  O(n*n)  O(nlogn)
@@ -49,11 +49,7 @@ def quickSort(nums:List[int]) -> List[int]:
     :param nums:无序数组
     :return:有序数组
     '''
-    def sort(nums:List[int], low:int, high:int) -> None:
-        if low < high:
-            index = getIndex(nums, low, high)
-            sort(nums, low, index - 1)
-            sort(nums, index + 1, high)
+
     def getIndex(nums:List[int], low:int, high:int):
         temp = nums[low]
         while (low < high):
@@ -72,6 +68,12 @@ def quickSort(nums:List[int]) -> List[int]:
         nums[low] = temp
         return low # 返回temp的正确位置
 
+    def sort(nums:List[int], low:int, high:int) -> None:
+        if low < high:
+            index = getIndex(nums, low, high)
+            sort(nums, low, index - 1)
+            sort(nums, index + 1, high)
+    sort(nums, 0, len(nums)-1)
     return nums
 
 # 简单插入排序
@@ -144,17 +146,48 @@ def selectionSort(nums:List[int]) -> List[int]:
 # 多路归并排序
 
 # 计数排序
+'''
+https://blog.csdn.net/csdnnews/article/details/83005778?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-2&spm=1001.2101.3001.4242
+'''
+def countSort(nums:List[int]) -> nums:
+    # 得到数列的最大值和最小值，并算出差值d
+    maxNum = float('-inf')
+    minNum = float('inf')
+    for i in nums:
+        if i > maxNum:
+            maxNum = i
+        elif i < minNum:
+            minNum = i
+    d = maxNum - minNum
+    # 创建统计数组并统计对应元素个数
+    countArray = [0] * (d + 1)
+    for i in nums:
+        countArray[i - minNum] += 1
+    # 统计数组做变形，后面的元素等于前面的元素之和
+    sum = 0
+    for i in range(len(countArray)):
+        sum += countArray[i]
+        countArray[i] = sum
+    # 倒序遍历原始数列，从统计数组找到正确位置，输出到结果数组
+    sortedArray = [0]*len(nums)
+    for i in range(len(nums)-1, -1, -1):
+        sortedArray[countArray[nums[i]-minNum] - 1] = nums[i]
+        countArray[nums[i]-minNum] -= 1
+
+    return sortedArray
 
 # 桶排序
 
 # 基数排序
 
 if __name__ == '__main__':
-    sorted_nums = bubbleSort(nums)
-    print(sorted_nums)
-    sorted_nums = selectionSort(nums)
-    print(sorted_nums)
-    sorted_nums = insertionSort(nums)
-    print(sorted_nums)
-    sorted_nums = quickSort(nums)
+    # sorted_nums = bubbleSort(nums)
+    # print(sorted_nums)
+    # sorted_nums = selectionSort(nums)
+    # print(sorted_nums)
+    # sorted_nums = insertionSort(nums)
+    # print(sorted_nums)
+    # sorted_nums = quickSort(nums)
+    # print(sorted_nums)
+    sorted_nums = countSort(nums)
     print(sorted_nums)
