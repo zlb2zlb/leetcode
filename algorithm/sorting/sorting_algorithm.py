@@ -7,6 +7,8 @@
 # @Software: PyCharm
 from typing import List
 
+import math
+
 nums = [3,5,8,35,21,1,9,4,5,8,2,33,64,85,12,4,5,95]
 
 ## 比较算法
@@ -150,6 +152,12 @@ def selectionSort(nums:List[int]) -> List[int]:
 https://blog.csdn.net/csdnnews/article/details/83005778?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-2&spm=1001.2101.3001.4242
 '''
 def countSort(nums:List[int]) -> nums:
+    '''
+    时间复杂度：O(n+k)  O(n+k)  O(n)
+    空间复杂度：O(n+k)
+    :param nums:无序数组
+    :return:有序数组
+    '''
     # 得到数列的最大值和最小值，并算出差值d
     maxNum = float('-inf')
     minNum = float('inf')
@@ -177,6 +185,49 @@ def countSort(nums:List[int]) -> nums:
     return sortedArray
 
 # 桶排序
+'''
+https://blog.csdn.net/qq_27124771/article/details/87651495
+划分多个范围相同的区间，每个子区间自排序，最后合并。
+'''
+def bucketSort(nums:List[int]) -> List[int]:
+    '''
+    时间复杂度：O(n+k)  O(n*n)  O(n)
+    空间复杂度：O(n+k)
+    :param nums:无序数组
+    :return:有序数组
+    '''
+    lg = len(nums)
+    sortedArr = [0]*lg
+    # 计算最大值与最小值
+    maxNum = float('-inf')
+    minNum = float('inf')
+    for i in nums:
+        maxNum = max(i, maxNum)
+        minNum = min(i, minNum)
+
+    # 计算桶的数量
+    bucketNum = int((maxNum - minNum) / lg) + 1
+    bucketArr = []
+    for i in range(bucketNum):
+        bucketArr.append([])
+
+    # 将每个元素放入桶
+    for i in range(lg):
+        num = int((nums[i] - minNum) / lg)
+        bucketArr[num].append(nums[i])
+
+    # 对每个桶进行排序
+    for i in range(len(bucketArr)):
+        bucketArr[i].sort()
+
+    # 将桶中的元素赋值到原序列
+    index = 0
+    for i in range(len(bucketArr)):
+        for j in range(len(bucketArr[i])):
+            sortedArr[index] = bucketArr[i][j]
+            index += 1
+    return sortedArr
+
 
 # 基数排序
 
@@ -189,5 +240,7 @@ if __name__ == '__main__':
     # print(sorted_nums)
     # sorted_nums = quickSort(nums)
     # print(sorted_nums)
-    sorted_nums = countSort(nums)
+    # sorted_nums = countSort(nums)
+    # print(sorted_nums)
+    sorted_nums = bucketSort(nums)
     print(sorted_nums)
