@@ -142,7 +142,44 @@ def selectionSort(nums:List[int]) -> List[int]:
     return nums
 
 # 堆排序
+'''
+a.将无需序列构建成一个堆，根据升序降序需求选择大顶堆或小顶堆;
 
+　　b.将堆顶元素与末尾元素交换，将最大元素"沉"到数组末端;
+
+　　c.重新调整结构，使其满足堆定义，然后继续交换堆顶元素与当前末尾元素，反复执行调整+交换步骤，直到整个序列有序。
+'''
+def heapSort(nums:List[int]) -> List[int]:
+    lg = len(nums)
+    def sort(nums:List[int]):
+        # 构建大顶堆
+        for i in range(int(lg/2)-1,-1,-1):
+            # 从第一个非叶子节点从下至上，从右至左调整结构
+            adjustHeap(nums, i, lg)
+        # 调整堆结构 + 交换堆顶元素与末尾元素
+        for j in range(lg-1,0,-1):
+            swap(nums, 0, j)
+            adjustHeap(nums, 0, j)
+
+    # 调整大顶堆
+    def adjustHeap(nums:List[int], i:int, length:int):
+        temp = nums[i] # 先取出当前元素
+        k = i*2+1
+        while k<lg:
+            if (k+1<lg and nums[k]<nums[k+1]):# 如果左子节点小于右子节点，k指向右子节点
+                k += 1
+            if nums[k] > temp: # 如果子节点大于父节点，将子节点值赋给父节点（不用进行交换）
+                nums[i] = nums[k]
+                i = k
+            else:
+                break
+            k = k*2+1
+
+    def swap(nums, a, b):
+        temp = nums[a]
+        nums[a] = nums[b]
+        nums[b] = temp
+    return nums
 # 二路归并排序
 
 # 多路归并排序
@@ -241,6 +278,8 @@ if __name__ == '__main__':
     # sorted_nums = quickSort(nums)
     # print(sorted_nums)
     # sorted_nums = countSort(nums)
+    # print(sorted_nums)
+    # sorted_nums = bucketSort(nums)
     # print(sorted_nums)
     sorted_nums = bucketSort(nums)
     print(sorted_nums)
