@@ -150,6 +150,13 @@ a.将无需序列构建成一个堆，根据升序降序需求选择大顶堆或
 　　c.重新调整结构，使其满足堆定义，然后继续交换堆顶元素与当前末尾元素，反复执行调整+交换步骤，直到整个序列有序。
 '''
 def heapSort(nums:List[int]) -> List[int]:
+    '''
+    不稳定
+    时间复杂度：O(nlogn)  O(nlogn)  O(nlogn)
+    空间复杂度：O(1)
+    :param nums:无序数组
+    :return:有序数组
+    '''
     lg = len(nums)
     def sort(nums:List[int]):
         # 构建大顶堆
@@ -180,8 +187,69 @@ def heapSort(nums:List[int]) -> List[int]:
         nums[a] = nums[b]
         nums[b] = temp
     return nums
-# 二路归并排序
 
+# 二路归并排序
+'''
+https://www.cnblogs.com/wuyepeng/p/9819827.html
+二路归并排序主要运用了“分治算法”，分治算法就是将一个大的问题划分为n个规模较小而结构相似的子问题。
+
+这些子问题解决的方法都是类似的，解决掉这些小的问题之后，归并子问题的结果，就得到了“大”问题的解。
+
+　　二路归并排序主旨是“分解”与“归并”
+
+　　分解：　　
+
+　　　　1.将一个数组分成两个数组，分别对两个数组进行排序。
+
+　　　　2.循环第一步，直到划分出来的“小数组”只包含一个元素，只有一个元素的数组默认为已经排好序。
+
+　　归并：
+
+　　　　1.将两个有序的数组合并到一个大的数组中。
+
+　　　　2.从最小的只包含一个元素的数组开始两两合并。此时，合并好的数组也是有序的。
+'''
+def mergeSort(nums:List[int]) -> List[int]:
+    '''
+    稳定
+    时间复杂度：O(nlogn)  O(nlogn)  O(nlogn)
+    空间复杂度：O(n)
+    :param nums:无序数组
+    :return:有序数组
+    '''
+    low,high = 0,len(nums)-1
+    def sort(low:int, high:int, nums:List[int]) -> List[int]:
+        if low < high:
+            mid = int((low + high)/2)
+            sort(low, mid, nums)
+            sort(mid+1, high, nums)
+            merge(low, mid, high, nums)
+    def merge(low:int, mid:int, high:int, nums:List[int]):
+        i,j,p = low,mid+1,0
+        res = [0]*(high-low+1)
+        while i<=mid and j<=high:
+            if nums[i]<=nums[j]:
+                res[p] = nums[i]
+                i += 1
+            else:
+                res[p] = nums[j]
+                j += 1
+            p += 1
+        while i<=mid:
+            res[p] = nums[i]
+            i += 1
+            p += 1
+        while j<=high:
+            res[p] = nums[j]
+            j += 1
+            p += 1
+        p,i = 0,low
+        while i <= high:
+            nums[i] = res[p]
+            p+=1
+            i+=1
+    sort(low, high, nums)
+    return nums
 # 多路归并排序
 
 # 计数排序
@@ -269,8 +337,9 @@ def bucketSort(nums:List[int]) -> List[int]:
 # 基数排序
 
 if __name__ == '__main__':
-    # sorted_nums = bubbleSort(nums)
-    # print(sorted_nums)
+    nums1 = nums.copy()
+    sorted_nums = bubbleSort(nums1)
+    print(sorted_nums)
     # sorted_nums = selectionSort(nums)
     # print(sorted_nums)
     # sorted_nums = insertionSort(nums)
@@ -281,5 +350,7 @@ if __name__ == '__main__':
     # print(sorted_nums)
     # sorted_nums = bucketSort(nums)
     # print(sorted_nums)
-    sorted_nums = bucketSort(nums)
+    # sorted_nums = bucketSort(nums)
+    # print(sorted_nums)
+    sorted_nums = mergeSort(nums)
     print(sorted_nums)
