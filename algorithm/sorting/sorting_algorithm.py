@@ -5,6 +5,9 @@
 # @Email   : 15967924690@163.com
 # @File    : sorting_algorithm.py
 # @Software: PyCharm
+
+# https://www.cnblogs.com/onepixel/articles/7674659.html
+
 from typing import List
 
 import math
@@ -22,6 +25,7 @@ nums = [3,5,8,35,21,1,9,4,5,8,2,33,64,85,12,4,5,95]
 '''
 def bubbleSort(nums:List[int]) -> List[int]:
     '''
+    稳定
     时间复杂度：O(n*n)  O(n*n)  O(n)
     空间复杂度：O(1)
     :param nums:无序数组
@@ -92,6 +96,7 @@ def quickSort(nums:List[int]) -> List[int]:
 '''
 def insertionSort(nums:List[int]) -> List[int]:
     '''
+    稳定
     时间复杂度：O(n*n)  O(n*n)  O(n)
     空间复杂度O：(1)
     :param nums:无序数组
@@ -108,6 +113,60 @@ def insertionSort(nums:List[int]) -> List[int]:
     return nums
 
 # 希尔排序
+'''
+https://www.cnblogs.com/chengxiao/p/6104371.html
+希尔排序在数组中采用跳跃式分组的策略，通过某个增量将数组元素划分为若干组，
+然后分组进行插入排序，随后逐步缩小增量，继续按组进行插入排序操作，直至增量为1。
+希尔排序通过这种策略使得整个数组在初始阶段达到从宏观上看基本有序，小的基本在前，大的基本在后。
+然后缩小增量，到增量为1时，其实多数情况下只需微调即可，不会涉及过多的数据移动。
+'''
+def shellSort(nums:List[int]) -> List[int]:
+    '''
+    不稳定
+    时间复杂度：O(n**1.3)  O(n**2)  O(n)
+    空间复杂度：O(1)
+    :param nums:
+    :return:
+    '''
+    arr = nums.copy()
+    lg = len(arr)
+    # 针对有序序列在插入时采用交换法
+    def sort(arr:List[int]):
+        # 增量gap，并逐步缩小增量
+        gap = int(lg/2)
+        while gap>0:
+            # 从第gap个元素，逐个对其所在组进行直接插入排序操作
+            for i in range(gap, lg, 1):
+                j = i
+                while j-gap>=0 and arr[j]<arr[j-gap]:
+                    # 插入排序采用交换法
+                    swap(arr, j, j-gap)
+                    j -= gap
+            gap = int(gap/2)
+    def sort1(arr):
+        # 增量gap，并逐步缩小增量
+        gap = int(lg/2)
+        while gap>0:
+            # 从第gap个元素，逐个对其所在组进行直接插入排序操作
+            for i in range(gap, lg, 1):
+                j = i
+                temp = arr[j]
+                if arr[j]<arr[j-gap]:
+                    while j-gap>=0 and temp<arr[j-gap]:
+                        # 移动法
+                        arr[j] = arr[j-gap]
+                        j -= gap
+                    arr[j] = temp
+            gap = int(gap/2)
+    def swap(arr, a, b):
+        arr[a] = arr[a] + arr[b]
+        arr[b] = arr[a] - arr[b]
+        arr[a] = arr[a] - arr[b]
+
+    # sort(arr)
+    sort1(arr)
+    return arr
+
 
 # 选择排序
 '''
@@ -333,13 +392,51 @@ def bucketSort(nums:List[int]) -> List[int]:
             index += 1
     return sortedArr
 
-
+'''
+https://blog.csdn.net/u014231646/article/details/80267468
+基数排序是按照低位先排序，然后收集；再按照高位排序，然后再收集；
+依次类推，直到最高位。
+有时候有些属性是有优先级顺序的，先按低优先级排序，再按高优先级排序。
+最后的次序就是高优先级高的在前，高优先级相同的低优先级高的在前。
+'''
 # 基数排序
+def radixSort(nums:List[int]) -> List[int]:
+    '''
+    稳定
+    时间复杂度：O(n*k)  O(n*k)  O(n*k)
+    空间复杂度：O(n+k)
+    :param nums:无序数组
+    :return:有序数组
+    '''
+    arr = nums.copy()
+    lg = len(arr)
+    maxDigit = max(arr)  # 找到最大值
+
+    keysNum = 0 # 关键字的个数，我们使用个位、十位、百位。。。。作为关键字
+    while(maxDigit>=1):
+        maxDigit /= 10
+        keysNum += 1
+    buckets = []
+    for i in range(10): # 每位可能的数字为0~9，所以设置10个桶
+        buckets.append([])
+    for i in range(keysNum):  # 由最次关键字开始，依次按照关键字进行分配
+        for j in range(lg):  # 扫描所有数组元素，将元素分配到对应的桶中
+            # //取出该元素对应第i+1位上的数字，比如258，现在要取出十位上的数字，258%100=58,58/10=5
+            key = int(arr[j]%int(math.pow(10,i+1))/int(math.pow(10,i)))
+            buckets[key].append(arr[j])
+        # 分配完之后，将桶中的元素依次复制回数组
+        counter = 0  # 元素计数器
+        for j in range(10):
+            bucket = buckets[j]
+            while len(bucket)>0:
+                arr[counter] = bucket.pop(0)
+                counter += 1
+    return arr
 
 if __name__ == '__main__':
-    nums1 = nums.copy()
-    sorted_nums = bubbleSort(nums1)
-    print(sorted_nums)
+    # nums1 = nums.copy()
+    # sorted_nums = bubbleSort(nums1)
+    # print(sorted_nums)
     # sorted_nums = selectionSort(nums)
     # print(sorted_nums)
     # sorted_nums = insertionSort(nums)
@@ -352,5 +449,10 @@ if __name__ == '__main__':
     # print(sorted_nums)
     # sorted_nums = bucketSort(nums)
     # print(sorted_nums)
-    sorted_nums = mergeSort(nums)
+    # sorted_nums = mergeSort(nums)
+    # print(sorted_nums)
+    # sorted_nums = shellSort(nums)
+    # print(sorted_nums)
+    sorted_nums = radixSort(nums)
     print(sorted_nums)
+
